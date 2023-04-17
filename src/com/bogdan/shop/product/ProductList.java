@@ -29,12 +29,5 @@ public class ProductList {
         return productsList;
     }
 
-    public void showProducts() {
-        int counter = 1;
-        for (Products product : productsList) {
-            System.out.printf("%s. %s - %s$;\n", counter, product.getName(), product.getPriceForOne());
-            counter++;
-        }
-        System.out.printf("You have: %.2f$\n", money.getMoney());
-    }
+
 }

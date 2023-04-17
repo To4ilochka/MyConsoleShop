@@ -1,18 +1,17 @@
 package com.bogdan.shop;
 
-import com.bogdan.shop.menu.Menu;
-import com.bogdan.shop.menu.basket.Basket;
 import com.bogdan.shop.money.Money;
 import com.bogdan.shop.product.ProductList;
+import com.bogdan.shop.product.ProductManagement;
 
 import java.util.Scanner;
 
 public class ShopConfiguration {
     private Money money;
-    private ProductList productsList;
+    private ProductList productList;
     private Scanner scanner;
+    private ProductManagement productManagement;
     private Basket basket;
-    private Menu menu;
 
     public Money getMoney() {
         if (money == null) {
@@ -21,11 +20,11 @@ public class ShopConfiguration {
         return money;
     }
 
-    public ProductList getProductsList() {
-        if (productsList == null) {
-            productsList = new ProductList(getMoney());
+    public ProductList getProductList() {
+        if (productList == null) {
+            productList = new ProductList(getMoney());
         }
-        return productsList;
+        return productList;
     }
 
     public Scanner getScanner() {
@@ -34,18 +33,17 @@ public class ShopConfiguration {
         }
         return scanner;
     }
+    public ProductManagement getProductManagement() {
+        if (productManagement == null) {
+            productManagement = new ProductManagement(getProductList(), getMoney(), getBasket(), getScanner());
+        }
+        return productManagement;
+    }
 
     public Basket getBasket() {
         if (basket == null) {
-            basket = new Basket(getProductsList(), getMoney(), getScanner());
+            basket = new Basket(getMoney(), getScanner());
         }
         return basket;
-    }
-
-    public Menu getMenu() {
-        if (menu == null) {
-            menu = new Menu(getMoney(), getProductsList(), getBasket(), getScanner());
-        }
-        return menu;
     }
 }

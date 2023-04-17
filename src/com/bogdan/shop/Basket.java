@@ -1,6 +1,5 @@
-package com.bogdan.shop.menu.basket;
+package com.bogdan.shop;
 
-import com.bogdan.shop.Constants;
 import com.bogdan.shop.exception.AmountOfProductLessThanZeroException;
 import com.bogdan.shop.exception.GramsOfProductLessThanZeroException;
 import com.bogdan.shop.exception.IncorrectInputTextException;
@@ -16,12 +15,10 @@ public class Basket {
 
     private HashMap<Products, Integer> basketOfProducts = new HashMap<>();
     private double totalPrice;
-    private final ProductList productsList;
     private final Money money;
     private final Scanner scanner;
 
-    public Basket(ProductList productsList, Money money, Scanner scanner) {
-        this.productsList = productsList;
+    public Basket(Money money, Scanner scanner) {
         this.money = money;
         this.scanner = scanner;
     }
@@ -45,27 +42,6 @@ public class Basket {
         } else {
             stringBuilder.append(String.format("\nTotal price: %.2f$\nYou have: %.2f$\n", totalPrice, money.getMoney()));
             System.out.println(stringBuilder);
-        }
-    }
-
-    public void addProductsInBasket() throws IncorrectInputTextException {
-        showBuyingWarning();
-        String scannerString;
-        String[] strings;
-        HashMap<Products, Integer> oldBasketOfProducts = new HashMap<>(basketOfProducts);
-        while (true) {
-            scannerString = scanner.next();
-            strings = scannerString.split("-");
-            if (strings.length == 2) {
-                findAndAddProduct(strings);
-            } else if (scannerString.equals(Constants.TAKE)) {
-                return;
-            } else if (scannerString.equals(Constants.STOP)) {
-                basketOfProducts = oldBasketOfProducts;
-                return;
-            } else {
-                throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);
-            }
         }
     }
 
@@ -180,16 +156,6 @@ public class Basket {
         }
     }
 
-    private void showBuyingWarning() {
-        System.out.println("""
-                \u001B[33mWarning!!!
-                Example of how to enter products correctly:
-                Name or number-amount or grams.
-                For example: Potato-2 or 3-2 or 10-500.
-                Uncountable products are measured in grams.
-                If you write Take, your products will be added to the basket.
-                If you write Stop, choice of products will be stopped and you lose your products!!!\u001B[0m""");
-    }
 
     private void showLayOutWarning() {
         System.out.println("""
@@ -203,18 +169,11 @@ public class Basket {
                 If you write Stop, choice of products will be stopped and you lose your lay out products!!!\u001B[0m""");
     }
 
-    private void findAndAddProduct(String[] strings) {
-        int counter = 1;
-        for (Products product : productsList.getProductsList()) {
-            if (strings[0].equals(Integer.toString(counter)) || strings[0].equals(product.getName())) {
-                if (basketOfProducts.get(product) == null) {
-                    basketOfProducts.put(product, Integer.valueOf(strings[1]));
-                } else {
-                    basketOfProducts.put(product, Integer.parseInt(strings[1]) + basketOfProducts.get(product));
-                }
-                return;
-            }
-            counter++;
-        }
+    public HashMap<Products, Integer> getBasketOfProducts() {
+        return basketOfProducts;
+    }
+
+    public void setBasketOfProducts(HashMap<Products, Integer> basketOfProducts) {
+        this.basketOfProducts = basketOfProducts;
     }
 }
