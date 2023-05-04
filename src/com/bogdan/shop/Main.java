@@ -16,16 +16,12 @@ public class Main {
             String scannerString = shopConfiguration.getScanner().next();
             switch (scannerString) {
                 case Constants.ONE:
-                    shopConfiguration.getProductManagement().showProducts();
-                    shopConfiguration.getProductManagement().addProductsInBasket();
+                    shopConfiguration.getProductManagement().buyProducts();
                     break;
                 case Constants.TWO:
-                    shopConfiguration.getBasket().showBasket();
-                    if (shopConfiguration.getBasket().getTotalPrice() != 0) {
-                        shopConfiguration.getBasket().basketBuyingChoice();
-                    }
+                    shopConfiguration.getBasket().basketMenu();
                     break;
-                case Constants.Three:
+                case Constants.THREE:
                     return;
                 default:
                     throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);

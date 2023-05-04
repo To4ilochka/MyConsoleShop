@@ -3,47 +3,59 @@ package com.bogdan.shop.product;
 import com.bogdan.shop.Basket;
 import com.bogdan.shop.Constants;
 import com.bogdan.shop.exception.IncorrectInputTextException;
-import com.bogdan.shop.money.Money;
 
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
 
 public class ProductManagement {
-    ProductList productList;
-    Money money;
-    Basket basket;
-    Scanner scanner;
+     private final List<Products> productList;
+    private final Basket basket;
+    private final Scanner scanner;
 
-    public ProductManagement(ProductList productList, Money money, Basket basket, Scanner scanner) {
-        this.productList = productList;
-        this.money = money;
+    public ProductManagement(List<Products> productsList, Basket basket, Scanner scanner) {
+        this.productList = new ArrayList<>(productsList);
         this.basket = basket;
         this.scanner = scanner;
     }
 
+    public void buyProducts() throws IncorrectInputTextException {
+        showProducts();
+        takeProducts();
+    }
+
     public void showProducts() {
         int counter = 1;
-        for (Products product : productList.getProductsList()) {
+        for (Products product : productList) {
             System.out.printf("%s. %s - %s$;\n", counter, product.getName(), product.getPriceForOne());
             counter++;
         }
-        System.out.printf("You have: %.2f$\n", money.getMoney());
     }
 
-    public void addProductsInBasket() throws IncorrectInputTextException {
+    private void margeMaps(Map<Products, Integer> mainMap, Map<Products, Integer> secondMap) {
+        for (Map.Entry<Products, Integer> entrySecondMap : secondMap.entrySet()) {
+            if (mainMap.containsKey(entrySecondMap.getKey())) {
+                mainMap.put(entrySecondMap.getKey(), mainMap.get(entrySecondMap.getKey()) + entrySecondMap.getValue());
+            } else {
+                mainMap.put(entrySecondMap.getKey(), entrySecondMap.getValue());
+            }
+        }
+    }
+
+    private void takeProducts() throws IncorrectInputTextException {
         showBuyingWarning();
         String scannerString;
         String[] strings;
-        HashMap<Products, Integer> oldBasketOfProducts = new HashMap<>(basket.getBasketOfProducts());
+        Map<Products, Integer> mergeBasketOfProducts = new HashMap<>();
         while (true) {
             scannerString = scanner.next();
             strings = scannerString.split("-");
             if (strings.length == 2) {
-                findAndAddProduct(strings);
-            } else if (scannerString.equals(Constants.TAKE)) {
+                findAndAddProduct(strings, mergeBasketOfProducts);
+            } else if (Constants.TAKE.equals(scannerString)) {
+                if (!mergeBasketOfProducts.isEmpty()) {
+                    margeMaps(basket.getBasketOfProducts(), mergeBasketOfProducts);
+                }
                 return;
-            } else if (scannerString.equals(Constants.STOP)) {
-                basket.setBasketOfProducts(oldBasketOfProducts);
+            } else if (Constants.STOP.equals(scannerString)) {
                 return;
             } else {
                 throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);
@@ -51,14 +63,14 @@ public class ProductManagement {
         }
     }
 
-    private void findAndAddProduct(String[] strings) {
+    private void findAndAddProduct(String[] strings, Map<Products, Integer> mergeBasketOfProducts) {
         int counter = 1;
-        for (Products product : productList.getProductsList()) {
+        for (Products product : productList) {
             if (strings[0].equals(Integer.toString(counter)) || strings[0].equals(product.getName())) {
-                if (basket.getBasketOfProducts().get(product) == null) {
-                    basket.getBasketOfProducts().put(product, Integer.valueOf(strings[1]));
+                if (!mergeBasketOfProducts.containsKey(product)) {
+                    mergeBasketOfProducts.put(product, Integer.valueOf(strings[1]));
                 } else {
-                    basket.getBasketOfProducts().put(product, Integer.parseInt(strings[1]) + basket.getBasketOfProducts().get(product));
+                    mergeBasketOfProducts.put(product, Integer.parseInt(strings[1]) + mergeBasketOfProducts.get(product));
                 }
                 return;
             }
