@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+//TODO move to configuration package
 public class ShopConfiguration {
     private Money money;
     private Scanner scanner;
@@ -24,6 +25,7 @@ public class ShopConfiguration {
 
     public List<Products> getProductList() {
         if (productList.isEmpty()) {
+            // TODO change it to productList = List.of()
             productList.addAll(List.of(new Products("Potato", 1.70, true),
                     new Products("Cherry", 0.50, true),
                     new Products("Onion", 4, true),

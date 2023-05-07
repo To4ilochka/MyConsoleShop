@@ -9,7 +9,7 @@ import com.bogdan.shop.product.Products;
 
 import java.util.*;
 
-
+//TODO move wit ProductManagement to service package and change Basket to BasketService, ProductManagement -> ProductService
 public class Basket {
 
     private Map<Products, Integer> basketOfProducts = new HashMap<>();
@@ -31,6 +31,7 @@ public class Basket {
         while (true) {
             scannerString = scanner.next();
             try {
+                //TODO Maybe we need to delete if
                 if (addLayOutProducts(scannerString, layOutPrice)) {
 
                 } else if (scannerString.equals("Lay_out")) {
@@ -138,6 +139,7 @@ public class Basket {
         }
     }
 
+    //TODO delete it
     private void throwMenuChoice() throws IncorrectInputTextException {
         System.out.println("1. Escape to menu\n");
         String scannerString = scanner.next();
