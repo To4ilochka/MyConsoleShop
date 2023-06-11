@@ -1,6 +1,8 @@
 package com.bogdan.shop;
 
+import com.bogdan.shop.configuration.ShopConfiguration;
 import com.bogdan.shop.exception.IncorrectInputTextException;
+import com.bogdan.shop.util.Constants;
 
 
 public class Main {
@@ -13,8 +15,8 @@ public class Main {
                     3. Exit.
                     You have: %.2f$
                     """, shopConfiguration.getMoney().getMoney());
-            String scannerString = shopConfiguration.getScanner().next();
-            switch (scannerString) {
+            String inputString = shopConfiguration.getScanner().next();
+            switch (inputString) {
                 case Constants.ONE:
                     shopConfiguration.getProductManagement().buyProducts();
                     break;

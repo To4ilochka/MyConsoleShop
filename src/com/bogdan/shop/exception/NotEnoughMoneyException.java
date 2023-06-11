@@ -1,7 +1,6 @@
 package com.bogdan.shop.exception;
 
-//TODO change to RunTimeException
-public class NotEnoughMoneyException extends Exception {
+public class NotEnoughMoneyException extends RuntimeException {
 
     public NotEnoughMoneyException() {
         super();

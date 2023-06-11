@@ -1,6 +1,5 @@
-package com.bogdan.shop;
+package com.bogdan.shop.util;
 
-//TODO move to package util
 public final class Constants {
     public static final String DON_T_BE_DUMB = "Don't be dumb. Pick a normal number.";
     public static final String TAKE = "Take";

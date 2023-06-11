@@ -1,6 +1,6 @@
 package com.bogdan.shop.exception;
 
-public class GramsOfProductLessThanZeroException extends Exception {
+public class GramsOfProductLessThanZeroException extends RuntimeException {
 
     public GramsOfProductLessThanZeroException() {
         super();

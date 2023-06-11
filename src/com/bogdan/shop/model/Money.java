@@ -1,4 +1,4 @@
-package com.bogdan.shop.money;
+package com.bogdan.shop.model;
 
 public class Money {
     private double money = 5 + Math.random() * 60;

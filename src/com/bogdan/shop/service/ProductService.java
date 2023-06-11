@@ -1,17 +1,17 @@
-package com.bogdan.shop.product;
+package com.bogdan.shop.service;
 
-import com.bogdan.shop.Basket;
-import com.bogdan.shop.Constants;
+import com.bogdan.shop.util.Constants;
+import com.bogdan.shop.model.Products;
 import com.bogdan.shop.exception.IncorrectInputTextException;
 
 import java.util.*;
 
-public class ProductManagement {
+public class ProductService {
      private final List<Products> productList;
-    private final Basket basket;
+    private final BasketService basket;
     private final Scanner scanner;
 
-    public ProductManagement(List<Products> productsList, Basket basket, Scanner scanner) {
+    public ProductService(List<Products> productsList, BasketService basket, Scanner scanner) {
         this.productList = new ArrayList<>(productsList);
         this.basket = basket;
         this.scanner = scanner;
@@ -42,20 +42,20 @@ public class ProductManagement {
 
     private void takeProducts() throws IncorrectInputTextException {
         showBuyingWarning();
-        String scannerString;
+        String inputString;
         String[] strings;
         Map<Products, Integer> mergeBasketOfProducts = new HashMap<>();
         while (true) {
-            scannerString = scanner.next();
-            strings = scannerString.split("-");
+            inputString = scanner.next();
+            strings = inputString.split("-");
             if (strings.length == 2) {
                 findAndAddProduct(strings, mergeBasketOfProducts);
-            } else if (Constants.TAKE.equals(scannerString)) {
+            } else if (Constants.TAKE.equals(inputString)) {
                 if (!mergeBasketOfProducts.isEmpty()) {
                     margeMaps(basket.getBasketOfProducts(), mergeBasketOfProducts);
                 }
                 return;
-            } else if (Constants.STOP.equals(scannerString)) {
+            } else if (Constants.STOP.equals(inputString)) {
                 return;
             } else {
                 throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);

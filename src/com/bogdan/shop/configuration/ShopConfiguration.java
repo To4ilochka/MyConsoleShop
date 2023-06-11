@@ -1,20 +1,19 @@
-package com.bogdan.shop;
+package com.bogdan.shop.configuration;
 
-import com.bogdan.shop.money.Money;
-import com.bogdan.shop.product.ProductManagement;
-import com.bogdan.shop.product.Products;
+import com.bogdan.shop.service.BasketService;
+import com.bogdan.shop.model.Products;
+import com.bogdan.shop.model.Money;
+import com.bogdan.shop.service.ProductService;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-//TODO move to configuration package
 public class ShopConfiguration {
     private Money money;
     private Scanner scanner;
-    private ProductManagement productManagement;
-    private Basket basket;
-    private final List<Products> productList = new ArrayList<>();
+    private ProductService productManagement;
+    private BasketService basket;
+    private List<Products> productList;
 
     public Money getMoney() {
         if (money == null) {
@@ -24,9 +23,9 @@ public class ShopConfiguration {
     }
 
     public List<Products> getProductList() {
-        if (productList.isEmpty()) {
+        if (productList == null) {
             // TODO change it to productList = List.of()
-            productList.addAll(List.of(new Products("Potato", 1.70, true),
+            productList = List.of(new Products("Potato", 1.70, true),
                     new Products("Cherry", 0.50, true),
                     new Products("Onion", 4, true),
                     new Products("Egg", 7, true),
@@ -38,7 +37,7 @@ public class ShopConfiguration {
                     new Products("Meat", 0.14, false),
                     new Products("Flour", 0.019, false),
                     new Products("Salt", 0.026, false),
-                    new Products("Rise", 0.067, false)));
+                    new Products("Rise", 0.067, false));
         }
         return productList;
     }
@@ -49,16 +48,16 @@ public class ShopConfiguration {
         }
         return scanner;
     }
-    public ProductManagement getProductManagement() {
+    public ProductService getProductManagement() {
         if (productManagement == null) {
-            productManagement = new ProductManagement(getProductList(), getBasket(), getScanner());
+            productManagement = new ProductService(getProductList(), getBasket(), getScanner());
         }
         return productManagement;
     }
 
-    public Basket getBasket() {
+    public BasketService getBasket() {
         if (basket == null) {
-            basket = new Basket(getMoney(), getScanner());
+            basket = new BasketService(getMoney(), getScanner());
         }
         return basket;
     }

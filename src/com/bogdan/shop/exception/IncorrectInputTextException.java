@@ -1,6 +1,6 @@
 package com.bogdan.shop.exception;
 
-public class IncorrectInputTextException extends Exception {
+public class IncorrectInputTextException extends RuntimeException {
 
     public IncorrectInputTextException() {
         super();

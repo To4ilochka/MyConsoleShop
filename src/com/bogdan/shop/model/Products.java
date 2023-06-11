@@ -1,8 +1,7 @@
-package com.bogdan.shop.product;
+package com.bogdan.shop.model;
 
 import java.util.Objects;
 
-//TODO move with Money to model package
 public class Products {
     private final String name;
     private final double price;
@@ -24,8 +23,6 @@ public class Products {
     public boolean isCountable() {
         return isCountable;
     }
-
-//  Наверное надо туСтринг
 
     @Override
     public boolean equals(Object o) {
