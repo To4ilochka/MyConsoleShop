@@ -1,45 +1,29 @@
 package com.bogdan.shop.configuration;
 
+import com.bogdan.shop.dao.CustomerDAO;
+import com.bogdan.shop.dao.OrderDAO;
+import com.bogdan.shop.dao.ProductDAO;
+import com.bogdan.shop.model.Product;
+import com.bogdan.shop.service.AccountService;
 import com.bogdan.shop.service.BasketService;
-import com.bogdan.shop.model.Products;
-import com.bogdan.shop.model.Money;
+import com.bogdan.shop.service.OrderService;
 import com.bogdan.shop.service.ProductService;
 
 import java.util.List;
 import java.util.Scanner;
 
 public class ShopConfiguration {
-    private Money money;
     private Scanner scanner;
-    private ProductService productManagement;
-    private BasketService basket;
-    private List<Products> productList;
+    private ProductService productService;
+    private BasketService basketService;
+    private AccountService accountService;
+    private OrderService orderService;
+    private CustomerDAO customerDAO;
+    private ProductDAO productDAO;
+    private OrderDAO orderDAO;
 
-    public Money getMoney() {
-        if (money == null) {
-            money = new Money();
-        }
-        return money;
-    }
-
-    public List<Products> getProductList() {
-        if (productList == null) {
-            // TODO change it to productList = List.of()
-            productList = List.of(new Products("Potato", 1.70, true),
-                    new Products("Cherry", 0.50, true),
-                    new Products("Onion", 4, true),
-                    new Products("Egg", 7, true),
-                    new Products("Sausage", 12.44, true),
-                    new Products("Bun", 8.56, true),
-                    new Products("Orange", 16, true),
-                    new Products("NEmik", 20.3, true),
-                    new Products("Sugar", 0.032, false),
-                    new Products("Meat", 0.14, false),
-                    new Products("Flour", 0.019, false),
-                    new Products("Salt", 0.026, false),
-                    new Products("Rise", 0.067, false));
-        }
-        return productList;
+    public List<Product> getProductList() {
+        return getProductDAO().getAll();
     }
 
     public Scanner getScanner() {
@@ -48,17 +32,48 @@ public class ShopConfiguration {
         }
         return scanner;
     }
-    public ProductService getProductManagement() {
-        if (productManagement == null) {
-            productManagement = new ProductService(getProductList(), getBasket(), getScanner());
+    public ProductService getProductService() {
+        if (productService == null) {
+            productService = new ProductService(getProductList(), getBasketService(), getScanner());
         }
-        return productManagement;
+        return productService;
     }
 
-    public BasketService getBasket() {
-        if (basket == null) {
-            basket = new BasketService(getMoney(), getScanner());
+    public BasketService getBasketService() {
+        if (basketService == null) {
+            basketService = new BasketService(getAccountService(), getOrderService(), getScanner());
         }
-        return basket;
+        return basketService;
+    }
+
+    public AccountService getAccountService() {
+        if (accountService == null) {
+            accountService = new AccountService(getScanner(), getCustomerDAO());
+        }
+        return accountService;
+    }
+    public OrderService getOrderService() {
+        if (orderService == null) {
+            orderService = new OrderService(getOrderDAO(), getAccountService(), getProductDAO());
+        }
+        return orderService;
+    }
+    private CustomerDAO getCustomerDAO() {
+        if (customerDAO == null) {
+            customerDAO = new CustomerDAO();
+        }
+        return customerDAO;
+    }
+    private ProductDAO getProductDAO() {
+        if (productDAO == null) {
+            productDAO = new ProductDAO();
+        }
+        return productDAO;
+    }
+    private OrderDAO getOrderDAO() {
+        if (orderDAO == null) {
+            orderDAO = new OrderDAO();
+        }
+        return orderDAO;
     }
 }

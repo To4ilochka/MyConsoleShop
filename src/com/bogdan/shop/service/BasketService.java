@@ -1,56 +1,40 @@
 package com.bogdan.shop.service;
 
+import com.bogdan.shop.model.Product;
 import com.bogdan.shop.util.Constants;
 import com.bogdan.shop.exception.AmountOfProductLessThanZeroException;
 import com.bogdan.shop.exception.GramsOfProductLessThanZeroException;
 import com.bogdan.shop.exception.IncorrectInputTextException;
 import com.bogdan.shop.exception.NotEnoughMoneyException;
-import com.bogdan.shop.model.Money;
-import com.bogdan.shop.model.Products;
 
 import java.util.*;
 
 public class BasketService {
 
-    private Map<Products, Integer> basketOfProducts = new HashMap<>();
     private double totalPrice;
-    private final Money money;
     private final Scanner scanner;
+    private final OrderService orderService;
+    private final AccountService accountService;
+    private final Map<Product, Integer> basketOfProducts = new HashMap<>();
 
-    public BasketService(Money money, Scanner scanner) {
-        this.money = money;
+    public BasketService(AccountService accountService, OrderService orderService, Scanner scanner) {
+        this.accountService = accountService;
+        this.orderService = orderService;
         this.scanner = scanner;
     }
 
-    public void layOutTheProduct() throws IncorrectInputTextException {
+    public void basketMenu() throws IncorrectInputTextException {
         showBasket();
-        showLayOutWarning();
-        String inputString;
-        String[] splitString;
-        double layOutPrice = 0;
-        Map<Products, Integer> oldBasketOfProducts = new HashMap<>(basketOfProducts);
-        while (true) {
-            inputString = scanner.next();
-            try {
-                splitString = splitInputStr(inputString);
-                if (inputString.equals("Lay_out")) {
-                    totalPrice -= layOutPrice;
-                    return;
-                } else if (Constants.STOP.equals(inputString)) {
-                    basketOfProducts = oldBasketOfProducts;
-                    return;
-                } else if ( isCorrectInputStr(splitString)) {
-                    addLayOutProducts(splitString, layOutPrice);
-                } else {
-                    throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);
-                }
-            } catch (AmountOfProductLessThanZeroException | GramsOfProductLessThanZeroException e) {
-                System.out.println(e.getMessage());
-            }
+        if (totalPrice != 0) {
+            basketBuyingChoice();
         }
     }
 
-    public void basketBuyingChoice() throws IncorrectInputTextException {
+    public Map<Product, Integer> getBasketOfProducts() {
+        return basketOfProducts;
+    }
+
+    private void basketBuyingChoice() throws IncorrectInputTextException {
         System.out.println(Constants.LAY_OUT_CHOICE);
         String inputString = scanner.next();
         switch (inputString) {
@@ -71,6 +55,33 @@ public class BasketService {
         }
     }
 
+    private void layOutTheProduct() throws IncorrectInputTextException {
+        showBasket();
+        showLayOutWarning();
+        String inputString;
+        String[] splitString;
+        double layOutPrice = 0;
+        Map<Product, Integer> basketOfLayOutProducts = new HashMap<>();
+        while (true) {
+            inputString = scanner.next();
+            try {
+                splitString = splitInputStr(inputString);
+                if (inputString.equals("Lay_out")) {
+                    totalPrice -= layOutPrice;
+                    return;
+                } else if (Constants.STOP.equals(inputString)) {
+                    return;
+                } else if (isCorrectInputStr(splitString)) {
+                    addLayOutProducts(splitString, layOutPrice);
+                } else {
+                    throw new IncorrectInputTextException(Constants.DON_T_BE_DUMB);
+                }
+            } catch (AmountOfProductLessThanZeroException | GramsOfProductLessThanZeroException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
     private boolean isCorrectInputStr(String[] splitString) {
         return splitString.length <= 2;
     }
@@ -81,7 +92,7 @@ public class BasketService {
 
     private void addLayOutProducts(String[] splitInputStr, double layOutPrice) throws AmountOfProductLessThanZeroException, GramsOfProductLessThanZeroException {
         int counter = 1;
-        for (Map.Entry<Products, Integer> entry : basketOfProducts.entrySet()) {
+        for (Map.Entry<Product, Integer> entry : basketOfProducts.entrySet()) {
             if (splitInputStr.length == 2) {
                 if (splitInputStr[0].equals(Integer.toString(counter)) || splitInputStr[0].equals(entry.getKey().getName())) {
                     if (entry.getKey().isCountable()) {
@@ -112,26 +123,19 @@ public class BasketService {
         }
     }
 
-    public void basketMenu() throws IncorrectInputTextException {
-        showBasket();
-        if (totalPrice != 0) {
-            basketBuyingChoice();
-        }
-    }
-
-    public Map<Products, Integer> getBasketOfProducts() {
-        return basketOfProducts;
-    }
-
     private void showBasket() throws IncorrectInputTextException {
         StringBuilder stringBuilder = new StringBuilder();
         totalPrice = 0;
         int counter = 1;
-        for (Map.Entry<Products, Integer> entry : basketOfProducts.entrySet()) {
+        for (Map.Entry<Product, Integer> entry : basketOfProducts.entrySet()) {
             if (entry.getKey().isCountable()) {
-                stringBuilder.append(String.format(Constants.COUNTABLE_PRODUCT_INF, counter, entry.getKey().getName(), entry.getValue(), entry.getKey().getPriceForOne() * entry.getValue()));
+                stringBuilder.append(String.format(Constants.COUNTABLE_PRODUCT_INF, counter, entry.getKey().getName(),
+                        entry.getValue(), entry.getKey().getPriceForOne() * entry.getValue())
+                );
             } else {
-                stringBuilder.append(String.format(Constants.UNCOUNTABLE_PRODUCT_INF, counter, entry.getKey().getName(), entry.getValue(), entry.getKey().getPriceForOne() * entry.getValue()));
+                stringBuilder.append(String.format(Constants.UNCOUNTABLE_PRODUCT_INF, counter, entry.getKey().getName(),
+                        entry.getValue(), entry.getKey().getPriceForOne() * entry.getValue())
+                );
             }
             totalPrice += entry.getKey().getPriceForOne() * entry.getValue();
             counter++;
@@ -139,31 +143,31 @@ public class BasketService {
         if (totalPrice == 0) {
             System.out.println("You haven't got any products.\n");
         } else {
-            stringBuilder.append(String.format("\nTotal price: %.2f$\nYou have: %.2f$\n", totalPrice, money.getMoney()));
+            stringBuilder.append(String.format("\nTotal price: %.2f$\nYou have: %.2f$\n", totalPrice, accountService.getCustomer().getMoney()));
             System.out.println(stringBuilder);
         }
     }
 
     private void buyBasket() throws NotEnoughMoneyException, IncorrectInputTextException {
-        if (totalPrice > money.getMoney()) {
+        if (totalPrice > accountService.getCustomer().getMoney()) {
             throw new NotEnoughMoneyException("You are have less money, than total price!!!");
         }
-        money.setMoney(money.getMoney() - totalPrice);
+        accountService.spendMoney(totalPrice);
+        orderService.makeOrders(basketOfProducts);
+//        надо бы транзакцию сделать
         basketOfProducts.clear();
-        System.out.printf("Operation was successful;)\nYou have: %.2f$\n", money.getMoney());
+        System.out.printf("Operation was successful;)\nYou have: %.2f$\n", accountService.getCustomer().getMoney());
     }
-    //TODO просить имя и фамилию при входе в магазин и заносить его в Таблицу со столбиком денег. Создать продукты в БД.
-    //TODO создать историю покупок в БД.
 
     private void showLayOutWarning() {
         System.out.println("""
                 \u001B[33mWarning!!!
-                Example of how to enter products correctly:
+                Example of how to enter product correctly:
                 Name or number, or name or number-amount or grams.
                 If you write name or number your product will de removed from basket,
                 if you write name or number-amount or grams, amount or grams of product will be replaced with your values.
                 For example: Potato or 3, or Potato-2 .
-                If you write Lay_out, your products will be lay out from the basket.
-                If you write Stop, choice of products will be stopped and you lose your lay out products!!!\u001B[0m""");
+                If you write Lay_out, your product will be lay out from the basket.
+                If you write Stop, choice of product will be stopped and you lose your lay out product!!!\u001B[0m""");
     }
 }
