@@ -1,18 +1,18 @@
 package com.bogdan.shop.service;
 
+import com.bogdan.shop.model.Product;
 import com.bogdan.shop.util.Constants;
-import com.bogdan.shop.model.Products;
 import com.bogdan.shop.exception.IncorrectInputTextException;
 
 import java.util.*;
 
 public class ProductService {
-     private final List<Products> productList;
+    private final List<Product> productList;
     private final BasketService basket;
     private final Scanner scanner;
 
-    public ProductService(List<Products> productsList, BasketService basket, Scanner scanner) {
-        this.productList = new ArrayList<>(productsList);
+    public ProductService(List<Product> productList, BasketService basket, Scanner scanner) {
+        this.productList = new ArrayList<>(productList);
         this.basket = basket;
         this.scanner = scanner;
     }
@@ -24,14 +24,14 @@ public class ProductService {
 
     public void showProducts() {
         int counter = 1;
-        for (Products product : productList) {
+        for (Product product : productList) {
             System.out.printf("%s. %s - %s$;\n", counter, product.getName(), product.getPriceForOne());
             counter++;
         }
     }
 
-    private void margeMaps(Map<Products, Integer> mainMap, Map<Products, Integer> secondMap) {
-        for (Map.Entry<Products, Integer> entrySecondMap : secondMap.entrySet()) {
+    private void margeMaps(Map<Product, Integer> mainMap, Map<Product, Integer> secondMap) {
+        for (Map.Entry<Product, Integer> entrySecondMap : secondMap.entrySet()) {
             if (mainMap.containsKey(entrySecondMap.getKey())) {
                 mainMap.put(entrySecondMap.getKey(), mainMap.get(entrySecondMap.getKey()) + entrySecondMap.getValue());
             } else {
@@ -44,7 +44,7 @@ public class ProductService {
         showBuyingWarning();
         String inputString;
         String[] strings;
-        Map<Products, Integer> mergeBasketOfProducts = new HashMap<>();
+        Map<Product, Integer> mergeBasketOfProducts = new HashMap<>();
         while (true) {
             inputString = scanner.next();
             strings = inputString.split("-");
@@ -63,9 +63,9 @@ public class ProductService {
         }
     }
 
-    private void findAndAddProduct(String[] strings, Map<Products, Integer> mergeBasketOfProducts) {
+    private void findAndAddProduct(String[] strings, Map<Product, Integer> mergeBasketOfProducts) {
         int counter = 1;
-        for (Products product : productList) {
+        for (Product product : productList) {
             if (strings[0].equals(Integer.toString(counter)) || strings[0].equals(product.getName())) {
                 if (!mergeBasketOfProducts.containsKey(product)) {
                     mergeBasketOfProducts.put(product, Integer.valueOf(strings[1]));
@@ -81,11 +81,11 @@ public class ProductService {
     private void showBuyingWarning() {
         System.out.println("""
                 \u001B[33mWarning!!!
-                Example of how to enter products correctly:
+                Example of how to enter product correctly:
                 Name or number-amount or grams.
                 For example: Potato-2 or 3-2 or 10-500.
-                Uncountable products are measured in grams.
-                If you write Take, your products will be added to the basket.
-                If you write Stop, choice of products will be stopped and you lose your products!!!\u001B[0m""");
+                Uncountable product are measured in grams.
+                If you write Take, your product will be added to the basket.
+                If you write Stop, choice of product will be stopped and you lose your product!!!\u001B[0m""");
     }
 }
